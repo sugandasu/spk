@@ -2,18 +2,18 @@
   include('../../app/settings.php');
   include('../../app/database.php');
   include('../../app/middleware.php');
-  include('../../controllers/siswa.php');
+  include('../../controllers/dataset.php');
   include('../../controllers/kriteria.php');
   include('../../controllers/nilai.php');
 
   $current_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 
-  $siswa_id = $_GET['siswa_id'];
+  $dataset_id = $_GET['dataset_id'];
   $kriteria_id = $_GET['kriteria_id'];
-  $siswa = getSiswaOne($conn, $siswa_id);
+  $dataset = getDatasetOne($conn, $dataset_id);
   $kriteria = getKriteriaOne($conn, $kriteria_id);
 
-  $list_nilai = getNilai($conn, $siswa_id, $kriteria_id);
+  $list_nilai = getNilai($conn, $dataset_id, $kriteria_id);
   $form_name = getFormName($conn, $kriteria_id);
   $list_form = getForm($conn, $kriteria_id);
 
@@ -41,8 +41,8 @@
         <!-- Begin Page Content -->
         <div class="container-fluid">
           <!-- Page Heading -->
-          <h1 class="h3 mb-4 text-gray-800"><a href="<?= $url . '/dashboard/kriteria/' ?>"></a> <a href="<?= $url . '/dashboard/nilai/?kriteria_id=' . $kriteria[0] ?>"><?= $kriteria[1] ?></a> Nilai Siswa <?= $siswa[2] ?></h1>
-          <p class="mb-4">Data Penilaian siswa <?= $siswa[2] ?> Perkriteria</p>
+          <h1 class="h3 mb-4 text-gray-800"><a href="<?= $url . '/dashboard/kriteria/' ?>"></a> <a href="<?= $url . '/dashboard/nilai/?kriteria_id=' . $kriteria[0] ?>"><?= $kriteria[1] ?></a> Nilai Dataset <?= $dataset[2] ?></h1>
+          <p class="mb-4">Data Penilaian dataset <?= $dataset[2] ?> Perkriteria</p>
           <!-- DataTales Example -->
           <div class="card shadow mb-4">
             <div class="card-header py-3">
@@ -116,7 +116,7 @@
           </button>
         </div>
         <form id="modalForm" action="" method="POST" role="form" enctype="multipart/form-data">
-          <input type="hidden" name="siswa_id" value="<?= $siswa_id ?>">
+          <input type="hidden" name="dataset_id" value="<?= $dataset_id ?>">
           <input type="hidden" name="kriteria_id" value="<?= $kriteria_id ?>">
           <?php foreach ($list_form as $form) : ?>
             <?php if ($form['inputType'] == 'input') : ?>
@@ -165,7 +165,7 @@
         </div>
         <form id="deleteModalForm" action="" method="POST" role="form" enctype="multipart/form-data">
           <div id="deleteModalBody" class="modal-body">
-            <input type="hidden" name="siswa_id" value="<?= $siswa_id ?>">
+            <input type="hidden" name="dataset_id" value="<?= $dataset_id ?>">
             <input type="hidden" name="kriteria_id" value="<?= $kriteria_id ?>">
           </div>
           <div class="modal-footer">
@@ -187,7 +187,7 @@
 
     function tambahForm() {
       const options = {
-        url: "<?= $url ?>/controllers/nilai.php?aksi=tambah&siswa_id=<?= $siswa_id ?>&kriteria_id=<?= $kriteria_id ?>",
+        url: "<?= $url ?>/controllers/nilai.php?aksi=tambah&dataset_id=<?= $dataset_id ?>&kriteria_id=<?= $kriteria_id ?>",
         title: 'Tambah',
         buttonClass: 'btn btn-primary'
       };
@@ -196,7 +196,7 @@
 
     function editForm(id) {
       const options = {
-        url: "<?= $url ?>/controllers/nilai.php?aksi=ubah&siswa_id=<?= $siswa_id ?>&kriteria_id=<?= $kriteria_id ?>",
+        url: "<?= $url ?>/controllers/nilai.php?aksi=ubah&dataset_id=<?= $dataset_id ?>&kriteria_id=<?= $kriteria_id ?>",
         title: 'Ubah',
         buttonClass: 'btn btn-info'
       };
@@ -206,14 +206,14 @@
     }
 
     function deleteForm() {
-      const url = '<?= $url ?>/controllers/nilai.php?aksi=hapus&siswa_id=<?= $siswa_id ?>&kriteria_id=<?= $kriteria_id ?>';
+      const url = '<?= $url ?>/controllers/nilai.php?aksi=hapus&dataset_id=<?= $dataset_id ?>&kriteria_id=<?= $kriteria_id ?>';
       const modalForm = document.querySelector('#deleteModalForm');
       const modalTitle = document.querySelector('#deleteModalTitle');
       const modalBody = document.querySelector('#deleteModalBody');
 
       modalForm.setAttribute('action', url);
       modalTitle.innerHTML = 'Hapus';
-      modalBody.innerHTML = 'Apakah anda yakin ingin menghapus nilai siswa dengan nama <?= $siswa[2] ?>';
+      modalBody.innerHTML = 'Apakah anda yakin ingin menghapus nilai dataset dengan nama <?= $dataset[2] ?>';
     }
 
     $('#dataTable').DataTable({
