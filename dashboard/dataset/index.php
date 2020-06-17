@@ -2,11 +2,11 @@
   include('../../app/settings.php');
   include('../../app/database.php');
   include('../../app/middleware.php');
-  include('../../controllers/siswa.php');
+  include('../../controllers/dataset.php');
 
   $current_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 
-  $list_siswa = getSiswa($conn);
+  $list_dataset = getDataset($conn);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -31,13 +31,13 @@
         <!-- Begin Page Content -->
         <div class="container-fluid">
           <!-- Page Heading -->
-          <h1 class="h3 mb-4 text-gray-800">Data Siswa</h1>
-          <p class="mb-4">Data Siswa SDN Inpress 1 Kawatuna.</p>
+          <h1 class="h3 mb-4 text-gray-800">Data Dataset</h1>
+          <p class="mb-4">Dataset</p>
           <!-- DataTales Example -->
           <div class="card shadow mb-4">
             <div class="card-header py-3">
               <h6 class="m-0 font-weight-bold text-primary">
-                Data Siswa
+                Data Dataset
                 <a href="#" title="Tambah" id="tambah" class="badge badge-primary" data-toggle="modal" data-target="#modal" onclick="tambahForm()"><i class="fa fa-plus"></i></a>
               </h6>
             </div>
@@ -46,41 +46,29 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                   <thead>
                     <tr>
-                      <th>Nis</th>
+                      <th>ID</th>
                       <th>Nama</th>
-                      <th>Tempat Lahir</th>
-                      <th>Tanggal Lahir</th>
-                      <th>Gender</th>
-                      <th>Alamat</th>
                       <th>Aksi</th>
                     </tr>
                   </thead>
                   <tfoot>
                     <tr>
-                      <th>Nis</th>
+                      <th>ID</th>
                       <th>Nama</th>
-                      <th>Tempat Lahir</th>
-                      <th>Tanggal Lahir</th>
-                      <th>Gender</th>
-                      <th>Alamat</th>
                       <th>Aksi</th>
                     </tr>
                   </tfoot>
                   <tbody>
-                    <?php if ($list_siswa->num_rows > 0) : ?>
-                    <?php while($siswa = $list_siswa->fetch_object()): ?>
+                    <?php if ($list_dataset->num_rows > 0) : ?>
+                    <?php while($dataset = $list_dataset->fetch_object()): ?>
                     <tr>
-                    <td id="nis_<?= $siswa->id ?>" data-value="<?= $siswa->nis ?>"><?= $siswa->nis ?></td>
-                    <td id="nama_<?= $siswa->id ?>" data-value="<?= $siswa->nama ?>"><?= $siswa->nama ?></td>
-                    <td id="tempat_lahir_<?= $siswa->id ?>" data-value="<?= $siswa->tempat_lahir ?>"><?= $siswa->tempat_lahir ?></td>
-                    <td id="tanggal_lahir_<?= $siswa->id ?>" data-value="<?= $siswa->tanggal_lahir ?>"><?= $siswa->tanggal_lahir ?></td>
-                    <td id="gender_<?= $siswa->id ?>" data-value="<?= $siswa->gender ?>"><?= $siswa->gender ? 'Laki-laki' : 'Perempuan' ?></td>
-                    <td id="alamat_<?= $siswa->id ?>" data-value="<?= $siswa->alamat ?>"><?= $siswa->alamat ?></td>
+                    <td id="id_<?= $dataset->id ?>" data-value="<?= $dataset->id ?>"><?= $dataset->id ?></td>
+                    <td id="nama_<?= $dataset->id ?>" data-value="<?= $dataset->nama ?>"><?= $dataset->nama ?></td>
                       <td>
                         <a href="#" title="Ubah" id="ubah" class="badge badge-info" data-toggle="modal" data-target="#modal"
-                          onclick="editForm(<?= $siswa->id ?>)"><i class="fa fa-edit"></i></a>
+                          onclick="editForm(<?= $dataset->id ?>)"><i class="fa fa-edit"></i></a>
                         <a href="#" title="hapus" id="hapus" class="badge badge-danger" data-toggle="modal"
-                          data-target="#deleteModal" onclick="deleteForm(<?= $siswa->id ?>)"><i class="fa fa-trash"></i></a>
+                          data-target="#deleteModal" onclick="deleteForm(<?= $dataset->id ?>)"><i class="fa fa-trash"></i></a>
                       </td>
                     </tr>
                     <?php endwhile ?>
@@ -104,7 +92,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="modalTitle">Tambah Siswa</h5>
+          <h5 class="modal-title" id="modalTitle">Tambah Dataset</h5>
           <button class="close" type="button" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">×</span>
           </button>
@@ -112,32 +100,8 @@
         <form id="modalForm" action="" method="POST" role="form" enctype="multipart/form-data">
           <div id="modalBody" class="modal-body">
             <div class="form-group">
-              <label for="nis">NIS</label>
-              <input type="text" class="form-control" name="nis" id="nis">
-            </div>
-            <div class="form-group">
-              <label for="nama">Nama Lengkap</label>
+              <label for="nama">Nama</label>
               <input type="text" class="form-control" name="nama" id="nama">
-            </div>
-            <div class="form-group">
-              <label for="tempat_lahir">Tempat Lahir</label>
-              <input type="text" class="form-control" name="tempat_lahir" id="tempat_lahir">
-            </div>
-            <div class="form-group">
-              <label for="tanggal_lahir">Tanggal Lahir</label>
-              <input type="date" class="form-control" name="tanggal_lahir" id="tanggal_lahir">
-            </div>
-            <div class="form-group">
-              <label for="gender">Gender</label>
-              <select class="form-control" name="gender" id="gender">
-                <option></option>
-                <option value="1">Laki-laki</option>
-                <option value="0">Perempuan</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="alamat">Alamat</label>
-              <input type="text" class="form-control" name="alamat" id="alamat">
             </div>
           </div>
           <div class="modal-footer">
@@ -175,24 +139,24 @@
 
   <?php include("../components/script-form.php") ?>
   <script>
-    document.querySelector('#navSiswa').setAttribute('class', 'nav-item active');
+    document.querySelector('#navDataset').setAttribute('class', 'nav-item active');
 
     function tambahForm() {
       resetForm();
       
-      const options = {url: "<?= $url ?>/controllers/siswa.php?aksi=tambah", method: 'POST', title: 'Tambah', buttonClass: 'btn btn-primary'};
+      const options = {url: "<?= $url ?>/controllers/dataset.php?aksi=tambah", method: 'POST', title: 'Tambah', buttonClass: 'btn btn-primary'};
       setForm(options);
     }
 
     function editForm(id) {
-      const options = {url: `<?= $url ?>/controllers/siswa.php?aksi=ubah&id=${id}`, method: 'PUT', title: 'Ubah', buttonClass: 'btn btn-info'};
+      const options = {url: `<?= $url ?>/controllers/dataset.php?aksi=ubah&id=${id}`, method: 'PUT', title: 'Ubah', buttonClass: 'btn btn-info'};
       setForm(options);
-      const columns = ['nis', 'nama', 'tempat_lahir', 'tanggal_lahir', 'gender', 'alamat'];
+      const columns = ['nama'];
       setFormInput(columns, id);
     }
 
     function deleteForm(id) {
-      const url = `<?= $url ?>/controllers/siswa.php?aksi=hapus&id=${id}`;
+      const url = `<?= $url ?>/controllers/dataset.php?aksi=hapus&id=${id}`;
       const modalForm = document.querySelector('#deleteModalForm');
       const modalTitle = document.querySelector('#deleteModalTitle');
       const modalBody = document.querySelector('#deleteModalBody');
@@ -200,7 +164,7 @@
 
       modalForm.setAttribute('action', url);
       modalTitle.innerHTML = 'Hapus';
-      modalBody.innerHTML = 'Apakah anda yakin ingin menghapus data siswa ' + data.innerHTML;
+      modalBody.innerHTML = 'Apakah anda yakin ingin menghapus data dataset ' + data.innerHTML;
     }
   </script>
 </body>

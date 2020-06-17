@@ -28,11 +28,11 @@
       Interface
     </div>
 
-    <!-- Nav Item - Siswa -->
-    <li id="navSiswa" class="nav-item">
-      <a class="nav-link" href="<?= $url ?>/dashboard/siswa">
+    <!-- Nav Item - Dataset -->
+    <li id="navDataset" class="nav-item">
+      <a class="nav-link" href="<?= $url ?>/dashboard/dataset">
         <i class="fas fa-fw fa-database"></i>
-        <span>Siswa</span></a>
+        <span>Dataset</span></a>
     </li>
 
     <!-- Nav Item - Pages Collapse Menu -->
