@@ -120,12 +120,6 @@
           </div>
           <div id="modalBody" class="modal-body">
             <div class="form-group">
-              <label for="nama">Nama</label>
-              <input type="text" class="form-control" name="nama" id="nama">
-            </div>
-          </div>
-          <div id="modalBody" class="modal-body">
-            <div class="form-group">
               <label for="bobot">Bobot</label>
               <input type="number" step="0.01" class="form-control" name="bobot" id="bobot">
             </div>
@@ -197,7 +191,7 @@
     function editForm(id) {
       const options = {url: `<?= $url ?>/controllers/penilaian.php?aksi=ubah&id=${id}&kriteria_id=<?= $kriteria_id ?>`, method: 'PUT', title: 'Ubah', buttonClass: 'btn btn-info'};
       setForm(options);
-      const columns = ['text', 'nama', 'bobot', 'tipe_nilai', 'tipe_form'];
+      const columns = ['text', 'bobot', 'tipe_nilai', 'tipe_form'];
       setFormInput(columns, id);
     }
 

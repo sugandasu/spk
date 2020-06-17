@@ -12,7 +12,7 @@ function tambahPenilaian($conn)
 {
   $kriteria_id = $_GET['kriteria_id'] ? $_GET['kriteria_id'] : false;
   $text = $_POST['text'] ? $_POST['text'] : false;
-  $nama = $_POST['nama'] ? $_POST['nama'] : false;
+  $nama = str_replace(" ", "_", strtolower($text));
   $bobot = $_POST['bobot'] ? $_POST['bobot'] : false;
   $tipe_nilai = $_POST['tipe_nilai'] ? $_POST['tipe_nilai'] : false;
   $tipe_form = $_POST['tipe_form'] ? $_POST['tipe_form'] : false;
@@ -33,7 +33,7 @@ function editPenilaian($conn)
   $kriteria_id = $_GET['kriteria_id'] ? $_GET['kriteria_id'] : false;
   $id = $_GET['id'];
   $text = $_POST['text'] ? $_POST['text'] : false;
-  $nama = $_POST['nama'] ? $_POST['nama'] : false;
+  $nama = str_replace(" ", "_", strtolower($text));
   $bobot = $_POST['bobot'] ? $_POST['bobot'] : false;
   $tipe_nilai = $_POST['tipe_nilai'] ? $_POST['tipe_nilai'] : false;
   $tipe_form = $_POST['tipe_form'] ? $_POST['tipe_form'] : false;
