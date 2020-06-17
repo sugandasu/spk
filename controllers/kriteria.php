@@ -18,12 +18,12 @@ function getKriteriaOne($conn, $id)
 function tambahKriteria($conn)
 {
   $nama = $_POST['nama'] ? $_POST['nama'] : false;
-  $created_at = date('m/d/Y h:i:s', time());
-  $updated_at = date('m/d/Y h:i:s', time());
+  $created_at = date('Y-m-d h:i:s', time());
+  $updated_at = date('Y-m-d h:i:s', time());
 
   $sql = "INSERT INTO kriterias (nama, created_at, updated_at) VALUES ('$nama', '$created_at', '$updated_at')";
   if ($conn->query($sql) === TRUE) {
-    header("location: http://localhost/spk/dashboard/kriteria/");
+    header("location: ". $url ."/dashboard/kriteria/");
   } else {
     echo "Error: " . $sql . "<br>" . $conn->error;
   }
@@ -33,11 +33,11 @@ function editKriteria($conn)
 {
   $id = $_GET['id'];
   $nama = $_POST['nama'] ? $_POST['nama'] : false;
-  $updated_at = date('m/d/Y h:i:s', time());
+  $updated_at = date('Y-m-d h:i:s', time());
 
   $sql = "UPDATE kriterias SET nama='$nama', updated_at='$updated_at' WHERE id='$id'";
   if ($conn->query($sql) === TRUE) {
-    header("location: http://localhost/spk/dashboard/kriteria/");
+    header("location: ". $url ."/dashboard/kriteria/");
   } else {
     echo "Error: " . $sql . "<br>" . $conn->error;
   }
@@ -48,13 +48,14 @@ function hapusKriteria($conn)
   $id = $_GET['id'];
   $sql = "DELETE FROM kriterias WHERE id='$id'";
   if ($conn->query($sql) === TRUE) {
-    header("location: http://localhost/spk/dashboard/kriteria/");
+    header("location: ". $url ."/dashboard/kriteria/");
   } else {
     echo "Error: " . $sql . "<br>" . $conn->error;
   }
 }
 
 if (isset($_GET['aksi'])) {
+  include('../app/settings.php');
   include('../app/database.php');
   include('../app/middleware.php');
   $aksi = $_GET['aksi'];

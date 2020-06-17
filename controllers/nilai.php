@@ -100,13 +100,13 @@ function tambahNilai($conn)
   $result = $conn->query($sql);
 
   if($result->num_rows <= 0) {
-    header("location: http://localhost/spk/dashboard/nilai-siswa/?siswa_id=$siswa_id&kriteria_id=$kriteria_id");
+    header("location: ". $url ."/dashboard/nilai-siswa/?siswa_id=$siswa_id&kriteria_id=$kriteria_id");
   }
 
   while ($penilaian = $result->fetch_object()) {
     $nilai = $_POST[$penilaian->nama];
-    $created_at = date('m/d/Y h:i:s', time());
-    $updated_at = date('m/d/Y h:i:s', time());
+    $created_at = date('Y-m-d h:i:s', time());
+    $updated_at = date('Y-m-d h:i:s', time());
 
     $nilai_sql = "INSERT siswa_nilais (siswa_id, kriteria_id, kriteria_penilaian_id, nilai, created_at, updated_at) VALUES ('$siswa_id', '$kriteria_id', '$penilaian->id', '$nilai', '$created_at', '$updated_at')";
     if ($conn->query($nilai_sql) === TRUE) {
@@ -114,7 +114,7 @@ function tambahNilai($conn)
     }
   }
 
-  header("location: http://localhost/spk/dashboard/nilai-siswa/?siswa_id=$siswa_id&kriteria_id=$kriteria_id");
+  header("location: ". $url ."/dashboard/nilai-siswa/?siswa_id=$siswa_id&kriteria_id=$kriteria_id");
 }
 
 function editNilai($conn)
@@ -126,12 +126,12 @@ function editNilai($conn)
   $result = $conn->query($sql);
 
   if($result->num_rows <= 0) {
-    header("location: http://localhost/spk/dashboard/nilai-siswa/?siswa_id=$siswa_id&kriteria_id=$kriteria_id");
+    header("location: ". $url ."/dashboard/nilai-siswa/?siswa_id=$siswa_id&kriteria_id=$kriteria_id");
   }
 
   while ($penilaian = $result->fetch_object()) {
     $nilai = $_POST[$penilaian->nama];
-    $updated_at = date('m/d/Y h:i:s', time());
+    $updated_at = date('Y-m-d h:i:s', time());
 
     $nilai_sql = "UPDATE siswa_nilais SET nilai='$nilai', updated_at='$updated_at' WHERE siswa_id=$siswa_id AND kriteria_penilaian_id=$penilaian->id";
     if ($conn->query($nilai_sql) === TRUE) {
@@ -139,7 +139,7 @@ function editNilai($conn)
     }
   }
 
-  header("location: http://localhost/spk/dashboard/nilai-siswa/?siswa_id=$siswa_id&kriteria_id=$kriteria_id");
+  header("location: ". $url ."/dashboard/nilai-siswa/?siswa_id=$siswa_id&kriteria_id=$kriteria_id");
 };
 
 function hapusNilai($conn)
@@ -150,13 +150,14 @@ function hapusNilai($conn)
   $sql = "DELETE FROM siswa_nilais WHERE siswa_id='$siswa_id' AND kriteria_id='$kriteria_id'";
 
   if ($conn->query($sql) === TRUE) {
-    header("location: http://localhost/spk/dashboard/nilai-siswa/?siswa_id=$siswa_id&kriteria_id=$kriteria_id");
+    header("location: ". $url ."/dashboard/nilai-siswa/?siswa_id=$siswa_id&kriteria_id=$kriteria_id");
   } else {
     echo "Error: " . $sql . "<br>" . $conn->error;
   }
 }
 
 if (isset($_GET['aksi'])) {
+  include('../app/settings.php');
   include('../app/database.php');
   include('../app/middleware.php');
   $aksi = $_GET['aksi'];

@@ -16,17 +16,17 @@ function login($conn)
     if ($conn->query($userSQL) === TRUE) {
       $domain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;
       setcookie("token", $token, time() + (24 * 60 * 60), "/", $domain, false);
-      header("location: http://localhost/spk/dashboard");
+      header("location: ".$url."/dashboard");
     }
   } else {
-    header("location: http://localhost/spk/errors/404.php");
+    header("location: ".$url."/errors/404.php");
   }
 }
 
 function logout()
 {
   setcookie('token', null);
-  header("location: http://localhost/spk/login.php");
+  header("location: ".$url."/login.php");
 }
 
 function editAdmin($conn)
@@ -35,15 +35,16 @@ function editAdmin($conn)
   $name = $_POST['name'];
   $username = $_POST['username'];
   $password = $_POST['password'];
-  $updated_at = date('m/d/Y h:i:s', time());
+  $updated_at = date('Y-m-d h:i:s', time());
   
   $userSQL = "UPDATE users SET name='$name', username='$username', password=MD5('$password'), updated_at='$updated_at' WHERE id=$id";
   if($conn->query($userSQL) === TRUE) {
-    header("location: http://localhost/spk/dashboard/admin");
+    header("location: ".$url."/dashboard/admin");
   }
 }
 
 if (isset($_GET['aksi'])) {
+  include('../app/settings.php');
   include('../app/database.php');
   include('../app/middleware.php');
   $aksi = $_GET['aksi'];
