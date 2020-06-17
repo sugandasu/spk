@@ -44,7 +44,7 @@
       <div id="collapsePages" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
           <h6 class="collapse-header">SPK:</h6>
-          <a id="dropKriteria" class="collapse-item" href="<?= $url ?>/dashboard/kriteria">Program Indonesia Pintar</a>
+          <a id="dropKriteria" class="collapse-item" href="<?= $url ?>/dashboard/kriteria">Kriteria</a>
         </div>
       </div>
     </li>
