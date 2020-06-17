@@ -1,8 +1,8 @@
 <?php
 
-function getNilai($conn, $siswa_id, $kriteria_id)
+function getNilai($conn, $dataset_id, $kriteria_id)
 {
-  $sql = "SELECT * FROM siswa_nilais WHERE siswa_id=$siswa_id AND kriteria_id=$kriteria_id";
+  $sql = "SELECT * FROM dataset_nilais WHERE dataset_id=$dataset_id AND kriteria_id=$kriteria_id";
   $result = $conn->query($sql);
 
   return $result;
@@ -93,14 +93,14 @@ function getForm($conn, $kriteria_id)
 
 function tambahNilai($conn)
 {
-  $siswa_id = $_POST['siswa_id'] ? $_POST['siswa_id'] : false;
+  $dataset_id = $_POST['dataset_id'] ? $_POST['dataset_id'] : false;
   $kriteria_id = $_POST['kriteria_id'] ? $_POST['kriteria_id'] : false;
 
   $sql = "SELECT * FROM kriteria_penilaians WHERE kriteria_id=$kriteria_id";
   $result = $conn->query($sql);
 
   if($result->num_rows <= 0) {
-    header("location: ". $url ."/dashboard/nilai-siswa/?siswa_id=$siswa_id&kriteria_id=$kriteria_id");
+    header("location: ". $url ."/dashboard/nilai-dataset/?dataset_id=$dataset_id&kriteria_id=$kriteria_id");
   }
 
   while ($penilaian = $result->fetch_object()) {
@@ -108,49 +108,49 @@ function tambahNilai($conn)
     $created_at = date('Y-m-d h:i:s', time());
     $updated_at = date('Y-m-d h:i:s', time());
 
-    $nilai_sql = "INSERT siswa_nilais (siswa_id, kriteria_id, kriteria_penilaian_id, nilai, created_at, updated_at) VALUES ('$siswa_id', '$kriteria_id', '$penilaian->id', '$nilai', '$created_at', '$updated_at')";
+    $nilai_sql = "INSERT dataset_nilais (dataset_id, kriteria_id, kriteria_penilaian_id, nilai, created_at, updated_at) VALUES ('$dataset_id', '$kriteria_id', '$penilaian->id', '$nilai', '$created_at', '$updated_at')";
     if ($conn->query($nilai_sql) === TRUE) {
 
     }
   }
 
-  header("location: ". $url ."/dashboard/nilai-siswa/?siswa_id=$siswa_id&kriteria_id=$kriteria_id");
+  header("location: ". $url ."/dashboard/nilai-dataset/?dataset_id=$dataset_id&kriteria_id=$kriteria_id");
 }
 
 function editNilai($conn)
 {
-  $siswa_id = $_POST['siswa_id'] ? $_POST['siswa_id'] : false;
+  $dataset_id = $_POST['dataset_id'] ? $_POST['dataset_id'] : false;
   $kriteria_id = $_POST['kriteria_id'] ? $_POST['kriteria_id'] : false;
 
   $sql = "SELECT * FROM kriteria_penilaians WHERE kriteria_id=$kriteria_id";
   $result = $conn->query($sql);
 
   if($result->num_rows <= 0) {
-    header("location: ". $url ."/dashboard/nilai-siswa/?siswa_id=$siswa_id&kriteria_id=$kriteria_id");
+    header("location: ". $url ."/dashboard/nilai-dataset/?dataset_id=$dataset_id&kriteria_id=$kriteria_id");
   }
 
   while ($penilaian = $result->fetch_object()) {
     $nilai = $_POST[$penilaian->nama];
     $updated_at = date('Y-m-d h:i:s', time());
 
-    $nilai_sql = "UPDATE siswa_nilais SET nilai='$nilai', updated_at='$updated_at' WHERE siswa_id=$siswa_id AND kriteria_penilaian_id=$penilaian->id";
+    $nilai_sql = "UPDATE dataset_nilais SET nilai='$nilai', updated_at='$updated_at' WHERE dataset_id=$dataset_id AND kriteria_penilaian_id=$penilaian->id";
     if ($conn->query($nilai_sql) === TRUE) {
       
     }
   }
 
-  header("location: ". $url ."/dashboard/nilai-siswa/?siswa_id=$siswa_id&kriteria_id=$kriteria_id");
+  header("location: ". $url ."/dashboard/nilai-dataset/?dataset_id=$dataset_id&kriteria_id=$kriteria_id");
 };
 
 function hapusNilai($conn)
 {
-  $siswa_id = $_GET['siswa_id'] ? $_GET['siswa_id'] : false;
+  $dataset_id = $_GET['dataset_id'] ? $_GET['dataset_id'] : false;
   $kriteria_id = $_GET['kriteria_id'] ? $_GET['kriteria_id'] : false;
 
-  $sql = "DELETE FROM siswa_nilais WHERE siswa_id='$siswa_id' AND kriteria_id='$kriteria_id'";
+  $sql = "DELETE FROM dataset_nilais WHERE dataset_id='$dataset_id' AND kriteria_id='$kriteria_id'";
 
   if ($conn->query($sql) === TRUE) {
-    header("location: ". $url ."/dashboard/nilai-siswa/?siswa_id=$siswa_id&kriteria_id=$kriteria_id");
+    header("location: ". $url ."/dashboard/nilai-dataset/?dataset_id=$dataset_id&kriteria_id=$kriteria_id");
   } else {
     echo "Error: " . $sql . "<br>" . $conn->error;
   }
