@@ -11,7 +11,7 @@
 <head>
   <?php include("components/meta.php") ?>
 
-  <title>SPK PIP</title>
+  <title>SPK</title>
   <?php include("components/style.php") ?>
 
 </head>
@@ -28,7 +28,7 @@
         <!-- Begin Page Content -->
         <div class="container-fluid">
           <!-- Page Heading -->
-          <h1 class="h3 mb-4 text-gray-800">Program Indonesia Pintar (PIP)</h1>
+          <h1 class="h3 mb-4 text-gray-800">SPK</h1>
           
           <!-- DataTales Example -->
           <div class="card shadow mb-4">
@@ -38,21 +38,6 @@
               </h6>
             </div>
             <div class="card-body">
-              <h2>Apa itu PIP?</h2>
-              <p class="mb-4">
-				<h5>Program Indonesia Pintar (PIP) melalui Kartu Indonesia Pintar (KIP) adalah
-				pemberian bantuan tunai pendidikan kepada anak usia sekolah (usia 6 - 21 tahun)
-				yang berasal dari keluarga miskin, rentan miskin: pemilik Kartu Keluarga Sejahtera (KKS),
-				peserta Program Keluarga Harapan (PKH), yatim piatu, penyandang disabilitas,
-				korban bencana alam/musibah.
-				PIP merupakan bagian dari penyempurnaan program Bantuan Siswa Miskin (BSM).</h5>
-			</p><br><br><br>
-			<h2>Apa tujuan PIP?</h2>
-			<p class="mb-4">
-				<h5>PIP dirancang untuk membantu anak-anak usia sekolah dari keluarga miskin/rentan miskin/prioritas 	tetap mendapatkan layanan pendidikan sampai tamat pendidikan menengah, baik melalui jalur pendidikan formal (	mulai SD/MI hingga anak Lulus SMA/SMK/MA) maupun pendidikan non formal (Paket A hingga Paket C serta kursus 	terstandar).
-				Melalui program ini pemerintah berupaya mencegah peserta didik dari kemungkinan putus sekolah, dan diharapkan dapat menarik siswa putus sekolah agar kembali melanjutkan pendidikannya.
-				PIP juga diharapkan dapat meringankan biaya personal pendidikan peserta didik, baik biaya langsung maupun tidak langsung.</h5>
-			</p>
             </div>
           </div>
         </div>

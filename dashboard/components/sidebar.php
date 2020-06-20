@@ -5,9 +5,9 @@
     <!-- Sidebar - Brand -->
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
       <div class="sidebar-brand-icon rotate-n-15">
-        <i class="fas fa-school"></i>
+        <i class="fas fa-tree"></i>
       </div>
-      <div class="sidebar-brand-text mx-4">SPK PIP </div>
+      <div class="sidebar-brand-text mx-4">SPK </div>
     </a>
 
     <!-- Divider -->
