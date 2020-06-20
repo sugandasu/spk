@@ -2,17 +2,43 @@
   include('../../app/settings.php');
   include('../../app/database.php');
   include('../../app/middleware.php');
-  include('../../controllers/siswa.php');
+  include('../../controllers/dataset.php');
   include('../../controllers/kriteria.php');
   include('../../controllers/ranking.php');
   include('../../controllers/nilai.php');
+  include('../../controllers/smart.php');
 
   $current_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 
   $kriteria_id = $_GET['kriteria_id'];
   $kriteria = getKriteriaOne($conn, $kriteria_id);
-  $list_siswa = getSiswa($conn);
-  $data = Topsis($conn, $kriteria_id);
+  $list_dataset = getDataset($conn);
+
+  $bobot = getKriteriaPenilaians($conn, $kriteria_id);
+  // echo "<pre>";
+  // print_r($bobot);
+  // echo "</pre>";
+
+  $smart = new Smart();
+  $bobot_baru = $smart->normasilasi_bobot($bobot);
+  // echo "<pre>";
+  // print_r($bobot_baru);
+  // echo "</pre>";
+
+  $list_nilai_dataset = getListDatasetNilai($conn, $kriteria_id);
+  // echo "<pre>";
+  // print_r($list_nilai_dataset);
+  // echo "</pre>";
+
+  $list_nilai_dataset_baru = $smart->hitung_nilai_utility($list_nilai_dataset, $bobot_baru);
+  // echo "<pre>";
+  // print_r($list_nilai_dataset_baru);
+  // echo "</pre>";
+
+  $ranking = $smart->ranking($list_nilai_dataset_baru);
+  // echo "<pre>";
+  // print_r($ranking);
+  // echo "</pre>";
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -43,7 +69,7 @@
           <div class="card shadow mb-4">
             <div class="card-header py-3">
               <h6 class="m-0 font-weight-bold text-primary">
-                Nilai Siswa
+                Jawaban Dataset
               </h6>
             </div>
             <div class="card-body">
@@ -51,39 +77,33 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                   <thead>
                     <tr>
-                      <th>Nis</th>
+                      <th>ID</th>
                       <th>Nama</th>
-                      <?php $kriteria_penilaian = getKriteriaPenilaian($conn, $kriteria_id); 
-                      if($kriteria_penilaian->num_rows > 0): ?>
-                      <?php while ($penilaian = $kriteria_penilaian->fetch_object()): ?>
-                      <th><?= $penilaian->text ?></th>
-                      <?php endwhile ?>
-                      <?php endif ?>
+                      <?php foreach($bobot as $b): ?>
+                      <th><?= $b["text"] . "(" . $b["bobot"] . ")" ?></th>
+                      <?php endforeach ?>
                     </tr>
                   </thead>
                   <tfoot>
                     <tr>
-                      <th>Nis</th>
+                      <th>ID</th>
                       <th>Nama</th>
-                      <?php $kriteria_penilaian = getKriteriaPenilaian($conn, $kriteria_id); 
-                      if($kriteria_penilaian->num_rows > 0): ?>
-                      <?php while ($penilaian = $kriteria_penilaian->fetch_object()): ?>
-                      <th><?= $penilaian->text ?></th>
-                      <?php endwhile ?>
-                      <?php endif ?>
+                      <?php foreach($bobot as $b): ?>
+                      <th><?= $b["text"] . "(" . $b["bobot"] . ")" ?></th>
+                      <?php endforeach ?>
                     </tr>
                   </tfoot>
                   <tbody>
-                    <?php if ($list_siswa->num_rows > 0) : ?>
-                    <?php while($siswa = $list_siswa->fetch_object()): ?>
+                    <?php if ($list_dataset->num_rows > 0) : ?>
+                    <?php while($dataset = $list_dataset->fetch_object()): ?>
                     <?php 
-                      $nilai_siswa = getNilaiSiswa($conn, $siswa->id, $kriteria_id); 
-                      if ($nilai_siswa->num_rows > 0):
+                      $nilai_dataset = getNilaiDataset($conn, $dataset->id, $kriteria_id); 
+                      if ($nilai_dataset->num_rows > 0):
                     ?>
                     <tr>
-                      <td><?= $siswa->nis ?></td>
-                      <td><?= $siswa->nama ?></td>
-                      <?php while ($nilai = $nilai_siswa->fetch_object()): ?>
+                      <td><?= $dataset->id ?></td>
+                      <td><?= $dataset->nama ?></td>
+                      <?php while ($nilai = $nilai_dataset->fetch_object()): ?>
                       <?php $kriterianPenilaian = getPenilaianOne($conn, $nilai->kriteria_penilaian_id) ?>
                       <?php if ($kriterianPenilaian[6] == 'select') : ?>
                         <?php $pilihan = getPilihanOne($conn, $nilai->kriteria_penilaian_id, $nilai->nilai) ?>
@@ -106,7 +126,7 @@
           <div class="card shadow mb-4">
             <div class="card-header py-3">
               <h6 class="m-0 font-weight-bold text-primary">
-                Nilai Siswa Fuzzy
+                Nilai Dataset
               </h6>
             </div>
             <div class="card-body">
@@ -114,37 +134,31 @@
                 <table class="table table-bordered" id="dataTableFuzzy" width="100%" cellspacing="0">
                   <thead>
                     <tr>
-                      <th>Nis</th>
+                      <th>ID</th>
                       <th>Nama</th>
-                      <?php $kriteria_penilaian = getKriteriaPenilaian($conn, $kriteria_id); 
-                      if($kriteria_penilaian->num_rows > 0): ?>
-                      <?php while ($penilaian = $kriteria_penilaian->fetch_object()): ?>
-                      <th><?= $penilaian->text ?></th>
-                      <?php endwhile ?>
-                      <?php endif ?>
+                      <?php foreach($bobot as $b): ?>
+                      <th><?= $b["text"] . "(" . $b["bobot"] . ")" ?></th>
+                      <?php endforeach ?>
                     </tr>
                   </thead>
                   <tfoot>
                     <tr>
-                      <th>Nis</th>
+                      <th>ID</th>
                       <th>Nama</th>
-                      <?php $kriteria_penilaian = getKriteriaPenilaian($conn, $kriteria_id); 
-                      if($kriteria_penilaian->num_rows > 0): ?>
-                      <?php while ($penilaian = $kriteria_penilaian->fetch_object()): ?>
-                      <th><?= $penilaian->text ?></th>
-                      <?php endwhile ?>
-                      <?php endif ?>
+                      <?php foreach($bobot as $b): ?>
+                      <th><?= $b["text"] . "(" . $b["bobot"] . ")" ?></th>
+                      <?php endforeach ?>
                     </tr>
                   </tfoot>
                   <tbody>
-                    <?php foreach ($data['siswa_list'] as $siswa): ?>
+                    <?php foreach ($list_nilai_dataset as $dataset): ?>
                     <tr>
-                      <td><?= $siswa['nama'] ?></td>
-                      <td><?= $siswa['nis'] ?></td>
+                      <td><?= $dataset['id'] ?></td>
+                      <td><?= $dataset['nama'] ?></td>
                       <?php $kriteria_penilaian = getKriteriaPenilaian($conn, $kriteria_id); 
                       if($kriteria_penilaian->num_rows > 0): ?>
                       <?php while ($penilaian = $kriteria_penilaian->fetch_object()): ?>
-                      <td><?= $siswa[$penilaian->nama] ?></td>
+                      <td><?= $dataset[$penilaian->nama] ?></td>
                       <?php endwhile ?>
                       <?php endif ?>
                     </tr>
@@ -157,7 +171,7 @@
           <div class="card shadow mb-4">
             <div class="card-header py-3">
               <h6 class="m-0 font-weight-bold text-primary">
-                Nilai Siswa Normalisasi
+                Nilai Utility Dataset
               </h6>
             </div>
             <div class="card-body">
@@ -165,39 +179,30 @@
                 <table class="table table-bordered" id="dataTableNormalisasi" width="100%" cellspacing="0">
                   <thead>
                     <tr>
-                      <th>Nis</th>
+                      <th>ID</th>
                       <th>Nama</th>
-                      <?php $kriteria_penilaian = getKriteriaPenilaian($conn, $kriteria_id); 
-                      if($kriteria_penilaian->num_rows > 0): ?>
-                      <?php while ($penilaian = $kriteria_penilaian->fetch_object()): ?>
-                      <th><?= $penilaian->text . "(" . $data['kriteria_rumus'][$penilaian->nama] . ")" ?></th>
-                      <?php endwhile ?>
-                      <?php endif ?>
+                      <?php foreach($bobot_baru as $b): ?>
+                      <th><?= $b["text"] . "(" . $b["bobot"] . ")" ?></th>
+                      <?php endforeach ?>
                     </tr>
                   </thead>
                   <tfoot>
                     <tr>
-                      <th>Nis</th>
+                      <th>ID</th>
                       <th>Nama</th>
-                      <?php $kriteria_penilaian = getKriteriaPenilaian($conn, $kriteria_id); 
-                      if($kriteria_penilaian->num_rows > 0): ?>
-                      <?php while ($penilaian = $kriteria_penilaian->fetch_object()): ?>
-                      <th><?= $penilaian->text . "(" . $data['kriteria_rumus'][$penilaian->nama] . ")" ?></th>
-                      <?php endwhile ?>
-                      <?php endif ?>
+                      <?php foreach($bobot_baru as $b): ?>
+                      <th><?= $b["text"] . "(" . $b["bobot"] . ")" ?></th>
+                      <?php endforeach ?>
                     </tr>
                   </tfoot>
                   <tbody>
-                    <?php foreach ($data['siswa_normalisasi'] as $siswa): ?>
+                    <?php foreach ($list_nilai_dataset_baru as $d): ?>
                     <tr>
-                      <td><?= $siswa['nama'] ?></td>
-                      <td><?= $siswa['nis'] ?></td>
-                      <?php $kriteria_penilaian = getKriteriaPenilaian($conn, $kriteria_id); 
-                      if($kriteria_penilaian->num_rows > 0): ?>
-                      <?php while ($penilaian = $kriteria_penilaian->fetch_object()): ?>
-                      <td><?= $siswa[$penilaian->nama] ?></td>
-                      <?php endwhile ?>
-                      <?php endif ?>
+                    <td><?= $d['id'] ?></td>
+                      <td><?= $d['nama'] ?></td>
+                      <?php foreach($bobot as $b): ?>
+                      <td><?= $d[$b["nama"]] ?></td>
+                      <?php endforeach ?>
                     </tr>
                     <?php endforeach ?>
                   </tbody>
@@ -208,7 +213,7 @@
           <div class="card shadow mb-4">
             <div class="card-header py-3">
               <h6 class="m-0 font-weight-bold text-primary">
-                Nilai Siswa Bobot
+                Nilai Akhir Alternatif
               </h6>
             </div>
             <div class="card-body">
@@ -216,39 +221,24 @@
                 <table class="table table-bordered" id="dataTableBobot" width="100%" cellspacing="0">
                   <thead>
                     <tr>
-                      <th>Nis</th>
+                      <th>ID</th>
                       <th>Nama</th>
-                      <?php $kriteria_penilaian = getKriteriaPenilaian($conn, $kriteria_id); 
-                      if($kriteria_penilaian->num_rows > 0): ?>
-                      <?php while ($penilaian = $kriteria_penilaian->fetch_object()): ?>
-                        <th><?= $penilaian->text . "(" . $penilaian->bobot . ")" ?></th>
-                      <?php endwhile ?>
-                      <?php endif ?>
+                      <th>Nilai Akhir</th>
                     </tr>
                   </thead>
                   <tfoot>
                     <tr>
-                      <th>Nis</th>
+                      <th>ID</th>
                       <th>Nama</th>
-                      <?php $kriteria_penilaian = getKriteriaPenilaian($conn, $kriteria_id); 
-                      if($kriteria_penilaian->num_rows > 0): ?>
-                      <?php while ($penilaian = $kriteria_penilaian->fetch_object()): ?>
-                      <th><?= $penilaian->text . "(" . $penilaian->bobot . ")" ?></th>
-                      <?php endwhile ?>
-                      <?php endif ?>
+                      <th>Nilai Akhir</th>
                     </tr>
                   </tfoot>
                   <tbody>
-                    <?php foreach ($data['siswa_bobot'] as $siswa): ?>
+                    <?php foreach ($list_nilai_dataset_baru as $d): ?>
                     <tr>
-                      <td><?= $siswa['nama'] ?></td>
-                      <td><?= $siswa['nis'] ?></td>
-                      <?php $kriteria_penilaian = getKriteriaPenilaian($conn, $kriteria_id); 
-                      if($kriteria_penilaian->num_rows > 0): ?>
-                      <?php while ($penilaian = $kriteria_penilaian->fetch_object()): ?>
-                      <td><?= $siswa[$penilaian->nama] ?></td>
-                      <?php endwhile ?>
-                      <?php endif ?>
+                    <td><?= $d['id'] ?></td>
+                      <td><?= $d['nama'] ?></td>
+                      <td><?= $d["nilai_akhir"] ?></td>
                     </tr>
                     <?php endforeach ?>
                   </tbody>
@@ -259,212 +249,36 @@
           <div class="card shadow mb-4">
             <div class="card-header py-3">
               <h6 class="m-0 font-weight-bold text-primary">
-                Nilai Solusi Ideal Positif
+                Ranking
               </h6>
             </div>
             <div class="card-body">
+              <a class="nav-item" href="<?= $url ?>/dashboard/laporan?kriteria_id=<?= $kriteria_id ?>">
+                <i class="fas fa-fw fa-print"></i>
+                <span>Cetak</span>
+              </a>
               <div class="table-responsive">
-                <table class="table table-bordered" id="dataTableSIP" width="100%" cellspacing="0">
+                <table class="table table-bordered" id="dataTableBobot" width="100%" cellspacing="0">
                   <thead>
                     <tr>
-                      <th>Nis</th>
+                      <th>ID</th>
                       <th>Nama</th>
-                      <?php $kriteria_penilaian = getKriteriaPenilaian($conn, $kriteria_id); 
-                      if($kriteria_penilaian->num_rows > 0): ?>
-                      <?php while ($penilaian = $kriteria_penilaian->fetch_object()): ?>
-                      <th><?= $penilaian->text . "(" . $data['ip'][$penilaian->nama] . ")" ?></th>
-                      <?php endwhile ?>
-                      <?php endif ?>
+                      <th>Nilai Akhir</th>
                     </tr>
                   </thead>
                   <tfoot>
                     <tr>
-                      <th>Nis</th>
+                      <th>ID</th>
                       <th>Nama</th>
-                      <?php $kriteria_penilaian = getKriteriaPenilaian($conn, $kriteria_id); 
-                      if($kriteria_penilaian->num_rows > 0): ?>
-                      <?php while ($penilaian = $kriteria_penilaian->fetch_object()): ?>
-                      <th><?= $penilaian->text . "(" . $data['ip'][$penilaian->nama] . ")" ?></th>
-                      <?php endwhile ?>
-                      <?php endif ?>
+                      <th>Nilai Akhir</th>
                     </tr>
                   </tfoot>
                   <tbody>
-                    <?php foreach ($data['siswa_ip'] as $siswa): ?>
+                    <?php foreach ($ranking as $d): ?>
                     <tr>
-                      <td><?= $siswa['nama'] ?></td>
-                      <td><?= $siswa['nis'] ?></td>
-                      <?php $kriteria_penilaian = getKriteriaPenilaian($conn, $kriteria_id); 
-                      if($kriteria_penilaian->num_rows > 0): ?>
-                      <?php while ($penilaian = $kriteria_penilaian->fetch_object()): ?>
-                      <td><?= $siswa[$penilaian->nama] ?></td>
-                      <?php endwhile ?>
-                      <?php endif ?>
-                    </tr>
-                    <?php endforeach ?>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-          <div class="card shadow mb-4">
-            <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary">
-                Nilai Solusi Ideal Negatif
-              </h6>
-            </div>
-            <div class="card-body">
-              <div class="table-responsive">
-                <table class="table table-bordered" id="dataTableSIN" width="100%" cellspacing="0">
-                  <thead>
-                    <tr>
-                      <th>Nis</th>
-                      <th>Nama</th>
-                      <?php $kriteria_penilaian = getKriteriaPenilaian($conn, $kriteria_id); 
-                      if($kriteria_penilaian->num_rows > 0): ?>
-                      <?php while ($penilaian = $kriteria_penilaian->fetch_object()): ?>
-                      <th><?= $penilaian->text . "(" . $data['in'][$penilaian->nama] . ")" ?></th>
-                      <?php endwhile ?>
-                      <?php endif ?>
-                    </tr>
-                  </thead>
-                  <tfoot>
-                    <tr>
-                      <th>Nis</th>
-                      <th>Nama</th>
-                      <?php $kriteria_penilaian = getKriteriaPenilaian($conn, $kriteria_id); 
-                      if($kriteria_penilaian->num_rows > 0): ?>
-                      <?php while ($penilaian = $kriteria_penilaian->fetch_object()): ?>
-                      <th><?= $penilaian->text . "(" . $data['in'][$penilaian->nama] . ")" ?></th>
-                      <?php endwhile ?>
-                      <?php endif ?>
-                    </tr>
-                  </tfoot>
-                  <tbody>
-                    <?php foreach ($data['siswa_in'] as $siswa): ?>
-                    <tr>
-                      <td><?= $siswa['nama'] ?></td>
-                      <td><?= $siswa['nis'] ?></td>
-                      <?php $kriteria_penilaian = getKriteriaPenilaian($conn, $kriteria_id); 
-                      if($kriteria_penilaian->num_rows > 0): ?>
-                      <?php while ($penilaian = $kriteria_penilaian->fetch_object()): ?>
-                      <td><?= $siswa[$penilaian->nama] ?></td>
-                      <?php endwhile ?>
-                      <?php endif ?>
-                    </tr>
-                    <?php endforeach ?>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-          <div class="card shadow mb-4">
-            <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary">
-                Nilai Jarak Solusi Ideal Positif
-              </h6>
-            </div>
-            <div class="card-body">
-              <div class="table-responsive">
-                <table class="table table-bordered" id="dataTableJSIP" width="100%" cellspacing="0">
-                  <thead>
-                    <tr>
-                      <th>Nis</th>
-                      <th>Nama</th>
-                      <th>Solusi</th>
-                    </tr>
-                  </thead>
-                  <tfoot>
-                    <tr>
-                      <th>Nis</th>
-                      <th>Nama</th>
-                      <th>Solusi</th>
-                    </tr>
-                  </tfoot>
-                  <tbody>
-                    <?php foreach ($data['siswa_list'] as $siswa): ?>
-                    <tr>
-                      <td><?= $siswa['nama'] ?></td>
-                      <td><?= $siswa['nis'] ?></td>
-                      <td><?= $siswa['jarak_sip'] ?></td>
-                    </tr>
-                    <?php endforeach ?>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-          <div class="card shadow mb-4">
-            <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary">
-                Nilai Jarak Solusi Ideal Negatif
-              </h6>
-            </div>
-            <div class="card-body">
-              <div class="table-responsive">
-                <table class="table table-bordered" id="dataTableJSIN" width="100%" cellspacing="0">
-                  <thead>
-                    <tr>
-                      <th>Nis</th>
-                      <th>Nama</th>
-                      <th>Solusi</th>
-                    </tr>
-                  </thead>
-                  <tfoot>
-                    <tr>
-                      <th>Nis</th>
-                      <th>Nama</th>
-                      <th>Solusi</th>
-                    </tr>
-                  </tfoot>
-                  <tbody>
-                    <?php foreach ($data['siswa_list'] as $siswa): ?>
-                    <tr>
-                      <td><?= $siswa['nama'] ?></td>
-                      <td><?= $siswa['nis'] ?></td>
-                      <td><?= $siswa['jarak_sin'] ?></td>
-                    </tr>
-                    <?php endforeach ?>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-          <div class="card shadow mb-4">
-            <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary">
-                Nilai Preferensi Siswa
-              </h6>
-            </div>
-            <div class="card-body">
-               <a class="nav-item" href="<?= $url ?>/dashboard/laporan?kriteria_id=<?= $kriteria_id ?>">
-                    <i class="fas fa-fw fa-print"></i>
-                    <span>Cetak</span></a>
-
-
-
-              <div class="table-responsive">
-                <table class="table table-bordered" id="dataTableRank" width="100%" cellspacing="0">
-                  <thead>
-                    <tr>
-                      <th>Nis</th>
-                      <th>Nama</th>
-                      <th>Hasil</th>
-                    </tr>
-                  </thead>
-                  <tfoot>
-                    <tr>
-                      <th>Nis</th>
-                      <th>Nama</th>
-                      <th>Hasil</th>
-                    </tr>
-                  </tfoot>
-                  <tbody>
-                    <?php foreach ($data['siswa_list'] as $siswa): ?>
-                    <tr>
-                      <td><?= $siswa['nama'] ?></td>
-                      <td><?= $siswa['nis'] ?></td>
-                      <td><?= $siswa['nilai_preferensi'] ?></td>
+                    <td><?= $d['id'] ?></td>
+                      <td><?= $d['nama'] ?></td>
+                      <td><?= $d["nilai_akhir"] ?></td>
                     </tr>
                     <?php endforeach ?>
                   </tbody>
