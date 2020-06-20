@@ -14,8 +14,7 @@ function login($conn)
     $token = substr(str_shuffle(MD5(uniqid()) . MD5(microtime()) . MD5(microtime())), 0, 60);
     $userSQL = "UPDATE users SET token='$token' WHERE username='$username' AND password=MD5('$password')";
     if ($conn->query($userSQL) === TRUE) {
-      $domain = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;
-      setcookie("token", $token, time() + (24 * 60 * 60), "/", $domain, false);
+      setcookie("token", $token, time() + (24 * 60 * 60), "/");
       header("location: ".$url."/dashboard");
     }
   } else {
@@ -25,12 +24,14 @@ function login($conn)
 
 function logout()
 {
-  setcookie('token', null);
+  setcookie("token", null, time() - (24 * 60 * 60), "/");
   header("location: ".$url."/login.php");
 }
 
 function editAdmin($conn)
 {
+  include('../app/middleware.php');
+
   $id = $_GET['user_id'];
   $name = $_POST['name'];
   $username = $_POST['username'];
@@ -46,7 +47,6 @@ function editAdmin($conn)
 if (isset($_GET['aksi'])) {
   include('../app/settings.php');
   include('../app/database.php');
-  include('../app/middleware.php');
   $aksi = $_GET['aksi'];
 
   if ($aksi == 'ubah') { 
