@@ -54,4 +54,24 @@ class Smart {
 
         return $dataset_baru;
     }
+
+    public function ranking($dataset=[])
+    {
+        $n = count($dataset);
+        while ($n > 1) {
+            $newn = 0;
+            for ($i=1; $i <= $n - 1; $i++) { 
+                if ($dataset[$i - 1]["nilai_akhir"] < $dataset[$i]["nilai_akhir"]) {
+                    $swap = $dataset[$i - 1];
+                    $dataset[$i - 1] = $dataset[$i];
+                    $dataset[$i] = $swap;
+                    $newn = $i;
+                }
+            }
+
+            $n = $newn;
+        }
+
+        return $dataset;
+    }
 };
